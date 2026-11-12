@@ -1,13 +1,13 @@
 {
     "cells": [
-        { "name": "ritmado" , "image": "", "number": "I", "instagram": "" },
-        { "name": "ruan" , "image": "", "number": "II", "instagram": "" },
+        { "name": "ritmado" , "image": "", "number": "I", "instagram": "daniel_ritmado" },
+        { "name": "ruan" , "image": "", "number": "II", "instagram": "ru_aanx" },
         { "name": "amber" , "image": "", "number": "III", "instagram": "" },
-        { "name": "dash" , "image": "", "number": "IV", "instagram": "" },
-        { "name": "tazz" , "image": "", "number": "V", "instagram": "" },
+        { "name": "dash" , "image": "", "number": "IV", "instagram": "dashods" },
+        { "name": "tazz" , "image": "", "number": "V", "instagram": "thetazz__" },
         { "name": "sara" , "image": "", "number": "VI", "instagram": "" },
-        { "name": "tony" , "image": "", "number": "VII", "instagram": "" },
-        { "name": "math" , "image": "", "number": "VIII", "instagram": "" },
-        { "name": "raabe" , "image": "", "number": "IX", "instagram": "" }
+        { "name": "tony" , "image": "", "number": "VII", "instagram": "tony.zurc" },
+        { "name": "math" , "image": "", "number": "VIII", "instagram": "tudovieira" },
+        { "name": "raabe" , "image": "", "number": "IX", "instagram": "raaberoque" }
     ]
 }
