@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>House of Imperio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="poster" aria-label="House of Imperio poster">
+        <div class="headline-group">
+          <h1 class="headline headline-large">
+            <span class="row row-1">HOUSE OF</span>
+            <span class="row row-2">IMPERIO</span>
+          </h1>
+        </div>
+
+        <div class="title-band" aria-label="statement mother blue legendary father muka">
+          <div class="title-row" data-image="" data-title="makayla" data-instagram="blue_revlon" style="background-color: white;">
+            <span class="word statement">LEGENDARY OA</span>
+            <span class="word mother">MOTHER</span>
+            <span class="word blue" style="color: var(--blue);">MAKAYLA</span>
+          </div>
+          <div class="title-row" data-image="" data-title="luky" data-instagram="mukamuzi" style="background-color: black;">
+            <span class="word legendary" style="color: white;">LEGENDARY OA</span>
+            <span class="word father" style="color: white;">FATHER</span>
+            <span class="word muka" style="color: var(--blue);">LUKY</span>
+          </div>
+          <div class="title-row" data-image="" data-title="choco" data-instagram="onixk_" style="background-color: var(--blue);">
+            <span class="word legendary" style="color: black;">LEGENDARY</span>
+            <span class="word godmother" style="color: black;">GODMOTHER</span>
+            <span class="word onyx" style="color: white;">CHOCO</span>
+          </div>
+          <div class="title-row" data-image="" data-title="hani" data-instagram="blue_revlon" style="background-color: white;">
+            <span class="word statement">STAR OA</span>
+            <span class="word mother">PRINCE</span>
+            <span class="word blue" style="color: var(--blue);">HANI</span>
+          </div>
+          <div class="title-row" data-image="" data-title="andrezinho" data-instagram="mukamuzi" style="background-color: black;">
+            <span class="word legendary" style="color: white;">INTERNATIONAL</span>
+            <span class="word father" style="color: white;">STAR PRINCE</span>
+            <span class="word muka" style="color: var(--blue);">ANDRE</span>
+          </div>
+        </div>
+
+        <div class="family-grid" aria-label="Family names and ranks">
+        </div>
+
+        <div class="footer-line" aria-label="Brazil Rio Janeiro Chapter 2026">
+          <span class="label">THE</span>
+          <span class="highlight">BRAZIL RIO DE JANEIRO</span>
+          <span class="label">CHAPTER</span>
+          <span class="year">2026</span>
+        </div>
+      </section>
+    </main>
+
+    <dialog class="image-modal" id="image-modal" aria-labelledby="image-modal-title">
+      <div class="image-modal-header">
+        <h2 id="image-modal-title"></h2>
+        <button class="image-modal-close" type="button" aria-label="Fechar imagem">&times;</button>
+      </div>
+      <img class="image-modal-image" alt="" hidden />
+      <p class="image-modal-status" role="status">Carregando imagem...</p>
+      <a class="image-modal-instagram" target="_blank" rel="noopener noreferrer" aria-label="Abrir perfil no Instagram" hidden>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2" />
+          <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2" />
+          <circle cx="17.5" cy="6.5" r="1" fill="currentColor" />
+        </svg>
+      </a>
+    </dialog>
+
+    <script>
+      const familyGrid = document.querySelector('.family-grid');
+      let cells = [];
+      const titleWords = Array.from(document.querySelectorAll('.title-row .word'));
+      const imageModal = document.querySelector('#image-modal');
+      const modalTitle = document.querySelector('#image-modal-title');
+      const modalImage = document.querySelector('.image-modal-image');
+      const modalStatus = document.querySelector('.image-modal-status');
+      const modalInstagram = document.querySelector('.image-modal-instagram');
+      const closeModalButton = document.querySelector('.image-modal-close');
+      let activeIndex = 0;
+
+      async function loadCells() {
+        const response = await fetch('cells.json');
+
+        if (!response.ok) {
+          throw new Error(`Falha ao carregar cells.json: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data.cells)) {
+          throw new Error('Formato inválido em cells.json: esperado um array "cells".');
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        data.cells.forEach((item, index) => {
+          if (typeof item.name !== 'string' || typeof item.number !== 'string') {
+            throw new Error(`Registro inválido em cells.json na posição ${index}.`);
+          }
+
+          const cell = document.createElement('div');
+          const name = document.createElement('span');
+          const number = document.createElement('small');
+
+          cell.classList.add('cell', index % 2 === 0 ? 'black' : 'blue');
+          if (item.image) {
+            cell.dataset.image = item.image;
+          }
+          if (typeof item.instagram === 'string' && item.instagram.trim()) {
+            cell.dataset.instagram = item.instagram.trim();
+          }
+
+          name.textContent = item.name.toUpperCase();
+          number.textContent = item.number;
+          cell.append(name, number);
+          fragment.append(cell);
+        });
+
+        familyGrid.append(fragment);
+        cells = Array.from(familyGrid.querySelectorAll('.cell'));
+
+        cells.forEach((cell) => {
+          cell.setAttribute('role', 'button');
+          cell.setAttribute('tabindex', '0');
+          cell.setAttribute('aria-label', `Exibir imagem de ${cell.querySelector('span').textContent.trim()}`);
+          cell.addEventListener('click', () => openImage(cell));
+          cell.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              openImage(cell);
+            }
+          });
+        });
+      }
+
+      function openImage(element) {
+        const titlePair = element.closest('.title-pair');
+        const titleRow = element.closest('.title-row');
+        const imageName = (element.id || element.querySelector('span')?.textContent || element.textContent || '')
+          .trim()
+          .toLowerCase();
+
+        if (!imageName) {
+          return;
+        }
+
+        const imageFile = element.dataset.image || titlePair?.dataset.image || titleRow?.dataset.image || `${imageName}.jpg`;
+        const displayName = element.dataset.title || titlePair?.dataset.title || titleRow?.dataset.title || imageName;
+        modalTitle.textContent = displayName.toUpperCase();
+        modalImage.alt = displayName.toUpperCase();
+        modalImage.hidden = true;
+        modalStatus.textContent = 'Carregando imagem...';
+        modalStatus.hidden = false;
+        const instagram = (element.dataset.instagram || titlePair?.dataset.instagram || titleRow?.dataset.instagram)
+          ?.trim()
+          .replace(/^@/, '');
+        modalInstagram.hidden = !instagram;
+        if (instagram) {
+          modalInstagram.href = `https://www.instagram.com/${encodeURIComponent(instagram)}/`;
+          modalInstagram.setAttribute('aria-label', `Abrir Instagram de @${instagram}`);
+        }
+        modalImage.src = `images/${imageFile}`;
+        imageModal.showModal();
+      }
+
+      titleWords.forEach((word) => {
+        word.setAttribute('role', 'button');
+        word.setAttribute('tabindex', '0');
+        word.setAttribute('aria-label', `Exibir imagem de ${word.textContent.trim()}`);
+        word.addEventListener('click', () => openImage(word));
+        word.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openImage(word);
+          }
+        });
+      });
+
+      modalImage.addEventListener('load', () => {
+        modalImage.hidden = false;
+        modalStatus.hidden = true;
+      });
+
+      modalImage.addEventListener('error', () => {
+        modalImage.hidden = true;
+        modalStatus.textContent = 'Imagem ainda não disponível.';
+      });
+
+      closeModalButton.addEventListener('click', () => imageModal.close());
+      imageModal.addEventListener('click', (event) => {
+        if (event.target === imageModal) {
+          imageModal.close();
+        }
+      });
+
+      function cycleCell() {
+        if (cells.length === 0) {
+          return;
+        }
+
+        cells.forEach((cell, index) => {
+          cell.classList.toggle('active', index === activeIndex);
+        });
+
+        setTimeout(() => {
+          cells[activeIndex].classList.remove('active');
+          activeIndex = (activeIndex + 1) % cells.length;
+          cycleCell();
+        }, 1500);
+      }
+
+      loadCells()
+        .then(cycleCell)
+        .catch((error) => {
+          console.error('Não foi possível gerar as células da família.', error);
+          familyGrid.textContent = 'Não foi possível carregar a lista da família.';
+          familyGrid.setAttribute('role', 'alert');
+        });
+    </script>
+  </body>
+</html>
